@@ -1,7 +1,8 @@
 # Veritabanı bağlantı bilgilerini içeren .env dosyasını yoksay
 .env
-server/.env
-client/.env
+/server/.env
+/client/.env
+
 # Account File
 server/account-file.json
 # Derleme sonuçlarını (genellikle "node_modules/" veya "vendor/" dizinleri) yoksay
