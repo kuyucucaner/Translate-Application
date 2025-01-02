@@ -15,6 +15,7 @@ const TranslateForm = () => {
       });
       
       dispatch(setTranslatedText(response.data.translatedText));
+      
     } catch (err) {
       console.error('Error translating:', err);
     }

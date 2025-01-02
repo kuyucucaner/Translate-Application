@@ -1,4 +1,6 @@
 const axios = require('axios');
+require('dotenv').config(); // .env dosyasını yükler
+
 
 const TranslateController =  {
 
@@ -11,17 +13,16 @@ const TranslateController =  {
         }
     
         try {
-            const response = await axios.post('https://libretranslate.de/translate', {
-                q: text,
-                source: 'auto',
-                target: targetLanguage,
-            });
+            const response = await axios.post(
+                `https://translation.googleapis.com/language/translate/v2?key=${process.env.GOOGLE_TRANSLATE_API_KEY}`,
+                {
+                  q: text,
+                  target: targetLanguage,
+                }
+              );
         
-            if (response.data && response.data.translatedText) {
-                res.status(201).json({ translatedText: response.data.translatedText });
-            } else {
-                throw new Error('Invalid response format');
-            }
+              // Yanıtı döndür
+              res.status(200).json({ translatedText: response.data.data.translations[0].translatedText });
         } catch (err) {
             console.error('Error:', err.message);
             res.status(500).json({ error: 'Translation Failed!', details: err.message });
