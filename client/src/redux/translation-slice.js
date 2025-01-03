@@ -6,6 +6,8 @@ const translationSlice = createSlice({
     text: '',
     targetLanguage: 'en',
     translatedText: '',
+    ocrDetectedText: '',
+
   },
   reducers: {
     setText: (state, action) => {
@@ -17,8 +19,11 @@ const translationSlice = createSlice({
     setTranslatedText: (state, action) => {
       state.translatedText = action.payload;
     },
+    setocrDetectedText: (state, action) => {
+      state.ocrDetectedText = action.payload;
+    },
   },
 });
 
-export const { setText, setTargetLanguage, setTranslatedText } = translationSlice.actions;
+export const { setText, setTargetLanguage, setTranslatedText  ,setocrDetectedText } = translationSlice.actions;
 export default translationSlice.reducer;

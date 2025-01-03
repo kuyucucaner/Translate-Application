@@ -1,5 +1,6 @@
 const axios = require('axios');
 require('dotenv').config(); // .env dosyasını yükler
+const Tesseract = require('tesseract.js');
 
 
 const TranslateController =  {
@@ -28,6 +29,34 @@ const TranslateController =  {
             res.status(500).json({ error: 'Translation Failed!', details: err.message });
         }
         
+    },
+    processImageAndTranslate: async function (req, res) {
+        const { targetLanguage } = req.body;
+
+        if (!req.file || !targetLanguage) {
+            return res.status(400).json({ error: 'Image or targetLanguage is missing!' });
+        }
+
+        try {
+            // 1. OCR İşlemi
+            const imagePath = req.file.path; // Yüklenen resim yolu
+            const ocrResult = await Tesseract.recognize(imagePath, 'eng'); // OCR işlemi
+            const detectedText = ocrResult.data.text.trim();
+            console.log('Detected Text:', detectedText);
+
+            // 2. Çeviri İşlemi
+            const translateResponse = await axios.post(
+                `https://translation.googleapis.com/language/translate/v2?key=${process.env.GOOGLE_TRANSLATE_API_KEY}`,
+                { q: detectedText, target: targetLanguage }
+            );
+
+            const translatedText = translateResponse.data.data.translations[0].translatedText;
+
+            res.status(200).json({ detectedText, translatedText });
+        } catch (err) {
+            console.error('Error:', err.message);
+            res.status(500).json({ error: 'OCR or Translation Failed!', details: err.message });
+        }
     }
     
 
