@@ -8,4 +8,7 @@ router.post('/' , TranslateController.translateText);
 
 router.post('/ocr-translate', upload.single('image'), TranslateController.processImageAndTranslate);
 
+
+router.post('/analyze-text', TranslateController.analyzeText);
+
 module.exports = router;

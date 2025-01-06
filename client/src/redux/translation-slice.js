@@ -7,6 +7,7 @@ const translationSlice = createSlice({
     targetLanguage: 'en',
     translatedText: '',
     ocrDetectedText: '',
+    analysis: {}, // Analiz sonuçları
 
   },
   reducers: {
@@ -22,8 +23,11 @@ const translationSlice = createSlice({
     setocrDetectedText: (state, action) => {
       state.ocrDetectedText = action.payload;
     },
+    setAnalysis: (state, action) => {
+      state.analysis = action.payload;
+    },
   },
 });
 
-export const { setText, setTargetLanguage, setTranslatedText  ,setocrDetectedText } = translationSlice.actions;
+export const { setText, setTargetLanguage, setTranslatedText  ,setocrDetectedText ,setAnalysis} = translationSlice.actions;
 export default translationSlice.reducer;

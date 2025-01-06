@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setText, setTargetLanguage, setTranslatedText ,setocrDetectedText } from '../redux/translation-slice';
+import { setText, setTargetLanguage, setTranslatedText ,setocrDetectedText  , setAnalysis} from '../redux/translation-slice';
 import axios from 'axios';
 
 const TranslateForm = () => {
   const dispatch = useDispatch();
-  const { text, targetLanguage, translatedText  , ocrDetectedText} = useSelector((state) => state.translation);
+  const { text, targetLanguage, translatedText  , ocrDetectedText ,analysis} = useSelector((state) => state.translation);
   const [file, setFile] = useState(null);
   const [ocrResult, setOcrResult] = useState('');
 
@@ -47,7 +47,19 @@ const TranslateForm = () => {
       console.error('Error with OCR or translation:', err);
     }
   };
+  const handleAnalyze = async () => {
+    if (!text) {
+      alert('Please enter text to analyze.');
+      return;
+    }
 
+    try {
+      const response = await axios.post('http://localhost:5000/api/v1/translate/analyze-text', { text });
+      dispatch(setAnalysis(response.data));
+    } catch (err) {
+      console.error('Error analyzing text:', err);
+    }
+  };
   return (
     <div>
       {/* Metin Çevirisi */}
@@ -90,6 +102,41 @@ const TranslateForm = () => {
             <p>{translatedText}</p>
         </div>
       )}
+       <div style={{ maxWidth: '600px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ textAlign: 'center' }}>Text Analysis</h1>
+      <textarea
+        value={text}
+        onChange={(e) => dispatch(setText(e.target.value))}
+        placeholder="Enter text to analyze"
+        style={{ width: '100%', height: '100px', marginBottom: '10px', padding: '10px' }}
+      />
+      <button
+        onClick={handleAnalyze}
+        style={{
+          marginBottom: '10px',
+          padding: '10px',
+          backgroundColor: '#2196F3',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Analyze Text
+      </button>
+
+      {analysis.wordCount && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>Analysis Results:</h3>
+          <ul>
+            <li>Word Count: {analysis.wordCount}</li>
+            <li>Sentence Count: {analysis.sentenceCount}</li>
+            <li>Unique Words: {analysis.uniqueWords}</li>
+            <li>Average Word Length: {analysis.avgWordLength} characters</li>
+          </ul>
+        </div>
+      )}
+    </div>
     </div>
   );
 };

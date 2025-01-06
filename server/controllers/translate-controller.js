@@ -1,6 +1,8 @@
 const axios = require('axios');
 require('dotenv').config(); // .env dosyasını yükler
 const Tesseract = require('tesseract.js');
+const { analyzeText } = require('../utils/translate-util'); // Metin analiz fonksiyonunu içe aktarın
+ 
 
 
 const TranslateController =  {
@@ -57,8 +59,22 @@ const TranslateController =  {
             console.error('Error:', err.message);
             res.status(500).json({ error: 'OCR or Translation Failed!', details: err.message });
         }
+    },  
+    analyzeText: async function (req, res) {
+        const { text } = req.body;
+
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required for analysis!' });
+        }
+
+        try {
+            const analysisResult = analyzeText(text); // Metni analiz et
+            res.status(200).json(analysisResult); // Analiz sonuçlarını döndür
+        } catch (err) {
+            console.error('Error analyzing text:', err.message);
+            res.status(500).json({ error: 'Text Analysis Failed!', details: err.message });
+        }
     }
-    
 
 };
 
