@@ -2,8 +2,21 @@ const axios = require('axios');
 require('dotenv').config(); // .env dosyasını yükler
 const Tesseract = require('tesseract.js');
 const { analyzeText } = require('../utils/translate-util'); // Metin analiz fonksiyonunu içe aktarın
- 
+const Sentiment = require('sentiment');
 
+// generateSuggestions fonksiyonunu tanımlayın
+function generateSuggestions(emotion) {
+    switch (emotion) {
+        case 'positive':
+            return ['Keep up the good work!', 'Share your positivity with others.'];
+        case 'negative':
+            return ['Consider taking a break.', 'Try focusing on the positives.'];
+        case 'neutral':
+            return ['Keep exploring your thoughts.', 'Stay balanced and calm.'];
+        default:
+            return [];
+    }
+}
 
 const TranslateController =  {
 
@@ -74,8 +87,38 @@ const TranslateController =  {
             console.error('Error analyzing text:', err.message);
             res.status(500).json({ error: 'Text Analysis Failed!', details: err.message });
         }
-    }
+    },
+    analyzeSentiment: async function (req, res) {
+        const { text } = req.body;
+        console.log('Request Body:', req.body);
 
+        if (!text) {
+            return res.status(400).json({ error: 'Translated text is missing!' });
+        }
+    
+        try {
+            const sentiment = new Sentiment();
+            const result = sentiment.analyze(text);
+    
+            // Duygusal tonu belirleme
+            const emotion = result.score > 0 ? 'positive' : result.score < 0 ? 'negative' : 'neutral';
+    
+            // Öneriler oluştur
+            const suggestions = generateSuggestions(emotion);
+    
+            // Sonucu yanıt olarak döndür
+            res.status(200).json({
+                sentiment: emotion,
+                score: result.score,
+                comparative: result.comparative,
+                suggestions,
+            });
+        } catch (err) {
+            console.error('Error analyzing sentiment:', err.message);
+            res.status(500).json({ error: 'Sentiment Analysis Failed!', details: err.message });
+        }
+    },
+    
 };
 
 module.exports = TranslateController;

@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setText, setTargetLanguage, setTranslatedText ,setocrDetectedText  , setAnalysis} from '../redux/translation-slice';
+import { setText, setTargetLanguage, setTranslatedText ,setocrDetectedText  , setAnalysis , setSentiment} from '../redux/translation-slice';
 import axios from 'axios';
 
 const TranslateForm = () => {
   const dispatch = useDispatch();
-  const { text, targetLanguage, translatedText  , ocrDetectedText ,analysis} = useSelector((state) => state.translation);
+  const { text, targetLanguage, translatedText  , ocrDetectedText ,analysis , sentiment} = useSelector((state) => state.translation);
   const [file, setFile] = useState(null);
   const [ocrResult, setOcrResult] = useState('');
 
+  const handleSentimentAnalysis = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/v1/translate/analyze-sentiment/', { text });
+      dispatch(setSentiment(response.data)); // Sentiment sonucunu Redux'a kaydet
+
+    } catch (err) {
+      console.error('Error with sentiment analysis:', err);
+    }
+  };
+  
   const handleTranslate = async () => {
     try {
       const response = await axios.post('http://localhost:5000/api/v1/translate/', {
@@ -102,31 +112,23 @@ const TranslateForm = () => {
             <p>{translatedText}</p>
         </div>
       )}
-       <div style={{ maxWidth: '600px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ textAlign: 'center' }}>Text Analysis</h1>
+       <div>
+      <h1 >Text Analysis</h1>
       <textarea
         value={text}
         onChange={(e) => dispatch(setText(e.target.value))}
         placeholder="Enter text to analyze"
-        style={{ width: '100%', height: '100px', marginBottom: '10px', padding: '10px' }}
+   
       />
       <button
         onClick={handleAnalyze}
-        style={{
-          marginBottom: '10px',
-          padding: '10px',
-          backgroundColor: '#2196F3',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
+
       >
         Analyze Text
       </button>
 
       {analysis.wordCount && (
-        <div style={{ marginTop: '20px' }}>
+        <div >
           <h3>Analysis Results:</h3>
           <ul>
             <li>Word Count: {analysis.wordCount}</li>
@@ -137,6 +139,40 @@ const TranslateForm = () => {
         </div>
       )}
     </div>
+
+  <div>
+  <h2>Sentiment Analysis</h2>
+  {/* Kullanıcının metin girebilmesi için bir alan */}
+  <textarea
+    value={text} // Redux'tan alınan text
+    onChange={(e) => dispatch(setText(e.target.value))} // Redux durumunu güncelliyoruz
+    placeholder="Enter text for sentiment analysis"
+  
+  />
+  <button
+    onClick={handleSentimentAnalysis} // Analizi başlatmak için fonksiyon
+  >
+    Analyze Sentiment
+  </button>
+
+  {sentiment.sentiment ? (
+  <div>
+    <p>Sentiment: <strong>{sentiment.sentiment}</strong></p>
+    <p>Score: {sentiment.score}</p>
+    <ul>
+      <h4>Suggestions:</h4>
+      {sentiment.suggestions?.map((suggestion, index) => (
+        <li key={index}>{suggestion}</li>
+      ))}
+    </ul>
+  </div>
+) : (
+  <p>No sentiment analysis results available.</p>
+)}
+
+</div>
+
+
     </div>
   );
 };
