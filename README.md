@@ -20,8 +20,8 @@ There is no user interface designed for this project. It includes basic test for
 
 ## 🛡️ Environment Variables
 
-PORT=5000
-GOOGLE_TRANSLATE_API_KEY=your_google_translate_api_key
+- PORT=5000
+- GOOGLE_TRANSLATE_API_KEY=your_google_translate_api_key
 
 
 ```bash
