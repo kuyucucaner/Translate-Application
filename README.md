@@ -1,6 +1,6 @@
 # 🌐 Translate Application
 
-This project is a translation application that utilizes the Google Translate API to convert user-inputted text into the desired language. It also supports text extraction and translation from uploaded images (OCR), and performs sentiment analysis on translated text.
+This project is a translation application that utilizes the Google Translate API to convert user-inputted text into the desired language. It also supports text extraction and translation from uploaded images (OCR), and performs sentiment analysis on translated text. 
 
 ## 🚀 Features
 
