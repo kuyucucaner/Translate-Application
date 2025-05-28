@@ -3,7 +3,7 @@
 This project is a translation application that utilizes the Google Translate API to convert user-inputted text into the desired language. It also supports text extraction and translation from uploaded images (OCR), and performs sentiment analysis on translated text. 
 
 ## 🚀 Features
-
+ 
 - ✅ Translate input text into a selected language using Google Translate API
 - 🖼️ Upload an image, extract text using OCR, and translate it
 - 🎭 Analyze the sentiment of translated text (e.g., positive, negative, neutral)
